@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, UserCheck, CheckCircle2, UserX, ArrowRight } from 'lucide-react';
+import { CalendarDays, UserCheck, ShieldAlert, UserX, ArrowRight, ShieldCheck } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout';
+import RiskBadge from '../../components/RiskBadge/RiskBadge';
+import RiskDetail from '../../components/RiskDetail/RiskDetail';
 import { useToast } from '../../components/Toast/ToastProvider';
 import { useAuth } from '../../context/AuthContext';
 import { listAppointments } from '../../api/resources';
@@ -10,11 +12,14 @@ import './DashboardPage.scss';
 const toDateStr = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+const ACTIVE = ['scheduled', 'checked-in'];
+
 export default function DashboardPage() {
   const showToast = useToast();
   const { user, profile } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [riskDetail, setRiskDetail] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -30,13 +35,15 @@ export default function DashboardPage() {
   }, [load]);
 
   const count = (status) => appointments.filter((a) => a.status === status).length;
-  const upcoming = appointments.filter((a) => ['scheduled', 'checked-in'].includes(a.status)).slice(0, 6);
+  const atRisk = appointments
+    .filter((a) => ACTIVE.includes(a.status) && a.risk?.band === 'high')
+    .sort((a, b) => b.risk.score - a.risk.score);
   const firstName = (profile?.displayName || user?.displayName || '').split(' ')[0];
 
   const cards = [
     { label: "Today's Appointments", value: appointments.length, icon: CalendarDays, tone: 'blue' },
     { label: 'Checked In', value: count('checked-in'), icon: UserCheck, tone: 'teal' },
-    { label: 'Completed', value: count('completed'), icon: CheckCircle2, tone: 'green' },
+    { label: 'High No-Show Risk', value: atRisk.length, icon: ShieldAlert, tone: 'amber' },
     { label: 'No-Shows', value: count('no-show'), icon: UserX, tone: 'red' },
   ];
 
@@ -57,9 +64,9 @@ export default function DashboardPage() {
         })}
       </div>
 
-      <div className="panel upcoming-panel">
+      <div className="panel watchlist-panel">
         <div className="upcoming-head">
-          <h2>Up next today</h2>
+          <h2>No-show watchlist</h2>
           <Link to="/appointments" className="see-all">
             All appointments <ArrowRight size={14} />
           </Link>
@@ -67,25 +74,33 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="empty-state"><p>Loading…</p></div>
-        ) : upcoming.length === 0 ? (
+        ) : atRisk.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon"><CalendarDays size={24} /></div>
-            <h3>Nothing in the queue</h3>
-            <p>There are no active appointments left for today.</p>
+            <div className="empty-icon"><ShieldCheck size={24} /></div>
+            <h3>No high-risk appointments</h3>
+            <p>Every active appointment today scores below the high-risk threshold.</p>
           </div>
         ) : (
-          <ul className="upcoming-list">
-            {upcoming.map((appt) => (
+          <ul className="watchlist">
+            {atRisk.map((appt) => (
               <li key={appt.id}>
-                <span className="up-time">{appt.start}</span>
-                <span className="up-patient">{appt.patientName}</span>
-                <span className="up-doctor">{appt.doctorName}</span>
-                <span className={`chip chip-${appt.status}`}>{appt.status.replace('-', ' ')}</span>
+                <span className="wl-time">{appt.start}</span>
+                <span className="wl-body">
+                  <span className="wl-patient">{appt.patientName}</span>
+                  <span className="wl-reason">
+                    {appt.risk.factors[0] ? appt.risk.factors[0].detail : appt.doctorName}
+                  </span>
+                </span>
+                <RiskBadge risk={appt.risk} onClick={() => setRiskDetail(appt)} />
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {riskDetail && (
+        <RiskDetail appointment={riskDetail} onClose={() => setRiskDetail(null)} />
+      )}
     </DashboardLayout>
   );
 }

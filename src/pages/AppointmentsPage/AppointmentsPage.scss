@@ -38,3 +38,7 @@
 .cell-dim {
   color: $text-dim;
 }
+
+.data-table tbody tr.row-high-risk {
+  box-shadow: inset 3px 0 0 $danger;
+}

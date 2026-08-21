@@ -8,6 +8,22 @@ import './PatientsPage.scss';
 
 const EMPTY_FORM = { firstName: '', lastName: '', phone: '', email: '', dateOfBirth: '', notes: '' };
 
+function AttendanceCell({ reliability }) {
+  if (!reliability || reliability.visits === 0) {
+    return <span className="attendance-new">No history</span>;
+  }
+
+  const { attended, noShows, visits, noShowRate } = reliability;
+  const tone = noShowRate === null || noShowRate < 15 ? 'good' : noShowRate < 35 ? 'fair' : 'poor';
+
+  return (
+    <span className={`attendance attendance-${tone}`}>
+      <span className="attendance-rate">{attended}/{visits} attended</span>
+      {noShows > 0 && <span className="attendance-sub">{noShows} missed</span>}
+    </span>
+  );
+}
+
 export default function PatientsPage() {
   const showToast = useToast();
   const [patients, setPatients] = useState([]);
@@ -135,7 +151,7 @@ export default function PatientsPage() {
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
-                  <th>Date of birth</th>
+                  <th>Attendance</th>
                   <th></th>
                 </tr>
               </thead>
@@ -145,7 +161,7 @@ export default function PatientsPage() {
                     <td className="cell-strong">{p.firstName} {p.lastName}</td>
                     <td>{p.phone || '—'}</td>
                     <td>{p.email || '—'}</td>
-                    <td>{p.dateOfBirth || '—'}</td>
+                    <td><AttendanceCell reliability={p.reliability} /></td>
                     <td>
                       <div className="row-actions">
                         <button className="btn-icon" title="Edit" onClick={() => openEdit(p)}>

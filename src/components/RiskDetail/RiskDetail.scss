@@ -1,0 +1,187 @@
+@use '../../styles/vars' as *;
+
+.risk-detail {
+  .risk-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+
+    &.band-low {
+      background: rgba(#2e9e5b, .09);
+      color: #23814a;
+    }
+
+    &.band-medium {
+      background: rgba($warning, .12);
+      color: #b26a02;
+    }
+
+    &.band-high {
+      background: rgba($danger, .09);
+      color: $danger;
+    }
+
+    &-score {
+      font-family: $font-head;
+      font-weight: 800;
+      font-size: 2.4rem;
+      line-height: 1;
+      letter-spacing: -0.03em;
+
+      span {
+        font-size: 1.2rem;
+        margin-left: 2px;
+      }
+    }
+
+    &-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    &-band {
+      font-size: .8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    &-copy {
+      font-size: .85rem;
+      color: $text;
+      opacity: .75;
+    }
+  }
+
+  .risk-context {
+    font-size: .88rem;
+    color: $text-dim;
+    margin-bottom: 16px;
+
+    strong { color: $text; }
+  }
+
+  .risk-history {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .rh-item {
+    background: $card;
+    border: 1px solid $border;
+    border-radius: 11px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .rh-value {
+    display: block;
+    font-family: $font-head;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: $text;
+  }
+
+  .rh-label {
+    display: block;
+    font-size: .68rem;
+    color: $text-dim;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: 2px;
+  }
+
+  .risk-section-title {
+    font-family: $font-head;
+    font-weight: 700;
+    font-size: .95rem;
+    color: $text;
+    margin-bottom: 10px;
+  }
+
+  .risk-empty {
+    font-size: .86rem;
+    color: $text-dim;
+    line-height: 1.6;
+  }
+
+  .risk-factors {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 13px;
+      background: $card;
+      border: 1px solid $border;
+      border-radius: 11px;
+    }
+  }
+
+  .rf-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+
+    &.up {
+      background: rgba($danger, .1);
+      color: $danger;
+    }
+
+    &.down {
+      background: rgba(#2e9e5b, .12);
+      color: #23814a;
+    }
+  }
+
+  .rf-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rf-label {
+    font-size: .85rem;
+    font-weight: 600;
+  }
+
+  .rf-detail {
+    font-size: .78rem;
+    color: $text-dim;
+  }
+
+  .rf-impact {
+    font-size: .82rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+
+    &.up { color: $danger; }
+    &.down { color: #23814a; }
+  }
+
+  .risk-confidence {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 16px;
+    font-size: .8rem;
+    color: $text-dim;
+  }
+}

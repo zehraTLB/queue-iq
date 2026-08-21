@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { getDb } from '../firebaseAdmin.js';
+import { fetchHistories } from '../services/history.js';
+import { scoreAppointment } from '../services/riskScoring.js';
 
 const router = Router();
 
@@ -45,7 +47,14 @@ router.get('/', async (req, res, next) => {
     const appointments = snap.docs
       .map((d) => ({ id: d.id, ...d.data() }))
       .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-    res.json(appointments);
+
+    const histories = await fetchHistories(appointments.map((a) => a.patientId));
+    const scored = appointments.map((appt) => ({
+      ...appt,
+      risk: scoreAppointment(appt, (histories.get(appt.patientId) || []).filter((h) => h.id !== appt.id)),
+    }));
+
+    res.json(scored);
   } catch (err) {
     next(err);
   }

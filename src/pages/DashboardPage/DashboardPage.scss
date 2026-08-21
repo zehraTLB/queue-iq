@@ -39,6 +39,11 @@
     color: #23814a;
   }
 
+  &.tone-amber {
+    background: rgba($warning, .13);
+    color: #b26a02;
+  }
+
   &.tone-red {
     background: rgba($danger, .1);
     color: $danger;
@@ -59,7 +64,7 @@
   color: $text-dim;
 }
 
-.upcoming-panel {
+.watchlist-panel {
   padding-bottom: 6px;
 }
 
@@ -89,12 +94,12 @@
   }
 }
 
-.upcoming-list {
+.watchlist {
   list-style: none;
 
   li {
     display: grid;
-    grid-template-columns: 64px 1.2fr 1fr auto;
+    grid-template-columns: 56px 1fr auto;
     align-items: center;
     gap: 14px;
     padding: 13px 20px;
@@ -102,16 +107,27 @@
     font-size: .88rem;
   }
 
-  .up-time {
+  .wl-time {
     font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
 
-  .up-patient {
+  .wl-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .wl-patient {
     font-weight: 600;
   }
 
-  .up-doctor {
+  .wl-reason {
+    font-size: .78rem;
     color: $text-dim;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

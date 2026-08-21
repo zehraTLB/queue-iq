@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout';
 import Modal from '../../components/Modal/Modal';
+import RiskBadge from '../../components/RiskBadge/RiskBadge';
+import RiskDetail from '../../components/RiskDetail/RiskDetail';
 import { useToast } from '../../components/Toast/ToastProvider';
 import {
   listAppointments,
@@ -50,6 +52,7 @@ export default function AppointmentsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [riskDetail, setRiskDetail] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -169,19 +172,21 @@ export default function AppointmentsPage() {
                   <th>Patient</th>
                   <th>Doctor</th>
                   <th>Reason</th>
+                  <th>No-show risk</th>
                   <th>Status</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {appointments.map((appt) => (
-                  <tr key={appt.id}>
+                  <tr key={appt.id} className={appt.risk?.band === 'high' ? 'row-high-risk' : ''}>
                     <td className="cell-time">
                       {appt.start} – {endTime(appt.start, appt.durationMin)}
                     </td>
                     <td className="cell-strong">{appt.patientName}</td>
                     <td>{appt.doctorName}</td>
                     <td className="cell-dim">{appt.reason || '—'}</td>
+                    <td><RiskBadge risk={appt.risk} onClick={() => setRiskDetail(appt)} /></td>
                     <td><span className={`chip chip-${appt.status}`}>{appt.status.replace('-', ' ')}</span></td>
                     <td><div className="row-actions">{actionsFor(appt)}</div></td>
                   </tr>
@@ -191,6 +196,10 @@ export default function AppointmentsPage() {
           </div>
         )}
       </div>
+
+      {riskDetail && (
+        <RiskDetail appointment={riskDetail} onClose={() => setRiskDetail(null)} />
+      )}
 
       {modalOpen && (
         <Modal title="New Appointment" onClose={() => setModalOpen(false)}>

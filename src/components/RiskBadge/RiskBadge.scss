@@ -1,0 +1,65 @@
+@use '../../styles/vars' as *;
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 11px 4px 5px;
+  border-radius: 100px;
+  border: 1px solid transparent;
+  font-family: $font-body;
+  font-size: .78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &.clickable {
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(30, 74, 116, .14);
+    }
+  }
+
+  .risk-dial {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: conic-gradient(currentColor calc(var(--pct) * 1%), rgba(22, 50, 74, .12) 0);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: #fff;
+    }
+  }
+
+  &.risk-low {
+    background: rgba(#2e9e5b, .1);
+    border-color: rgba(#2e9e5b, .25);
+    color: #23814a;
+  }
+
+  &.risk-medium {
+    background: rgba($warning, .12);
+    border-color: rgba($warning, .3);
+    color: #b26a02;
+  }
+
+  &.risk-high {
+    background: rgba($danger, .1);
+    border-color: rgba($danger, .3);
+    color: $danger;
+  }
+
+  &.risk-unknown {
+    color: $muted;
+    font-weight: 500;
+  }
+}

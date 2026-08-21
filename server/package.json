@@ -6,7 +6,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "seed": "node scripts/seedDemoData.js",
+    "seed:clear": "node scripts/seedDemoData.js --clear"
   },
   "dependencies": {
     "cors": "^2.8.5",

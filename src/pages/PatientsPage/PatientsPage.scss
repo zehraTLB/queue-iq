@@ -1,5 +1,31 @@
 @use '../../styles/vars' as *;
 
+.attendance {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.3;
+
+  &-rate {
+    font-weight: 600;
+    font-size: .84rem;
+  }
+
+  &-sub {
+    font-size: .74rem;
+    color: $text-dim;
+  }
+
+  &-good .attendance-rate { color: #23814a; }
+  &-fair .attendance-rate { color: #b26a02; }
+  &-poor .attendance-rate { color: $danger; }
+}
+
+.attendance-new {
+  font-size: .82rem;
+  color: $muted;
+}
+
 .search-bar {
   position: relative;
   max-width: 380px;

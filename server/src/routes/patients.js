@@ -1,12 +1,16 @@
 import { Router } from 'express';
 import { getDb } from '../firebaseAdmin.js';
+import { fetchHistories } from '../services/history.js';
+import { patientReliability } from '../services/riskScoring.js';
 
 const router = Router();
 
 router.get('/', async (req, res, next) => {
   try {
     const snap = await getDb().collection('patients').orderBy('createdAt', 'desc').limit(200).get();
-    res.json(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    const patients = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const histories = await fetchHistories(patients.map((p) => p.id));
+    res.json(patients.map((p) => ({ ...p, reliability: patientReliability(histories.get(p.id) || []) })));
   } catch (err) {
     next(err);
   }
