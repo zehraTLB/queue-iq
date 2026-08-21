@@ -1,0 +1,141 @@
+$bg:        #f4f9fc;
+$panel:     #ffffff;
+$border:    #dbe7f0;
+$primary:   #1e88e5;
+$teal:      #00a693;
+$text:      #16324a;
+$text-dim:  #5c7288;
+$font-head: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+$font-body: 'Inter', 'Segoe UI', sans-serif;
+
+.dashboard {
+  min-height: 100vh;
+  background: $bg;
+  font-family: $font-body;
+  color: $text;
+}
+
+.dash-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $panel;
+  border-bottom: 1px solid $border;
+  padding: 14px 28px;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, $primary, $teal);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-name {
+      font-family: $font-head;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+
+      span { color: $primary; }
+    }
+  }
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba($primary, .1);
+    color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .user-name {
+    font-size: .85rem;
+    font-weight: 600;
+  }
+
+  .user-role {
+    font-size: .72rem;
+    color: $text-dim;
+    text-transform: capitalize;
+  }
+}
+
+.btn-signout {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 9px;
+  padding: 8px 14px;
+  font-family: $font-body;
+  font-size: .82rem;
+  font-weight: 500;
+  color: $text-dim;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+}
+
+.dash-body {
+  display: flex;
+  justify-content: center;
+  padding: 64px 28px;
+}
+
+.welcome-card {
+  background: $panel;
+  border: 1px solid $border;
+  border-radius: 18px;
+  padding: 40px 44px;
+  max-width: 560px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(30, 74, 116, .08);
+
+  h1 {
+    font-family: $font-head;
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: $text-dim;
+    line-height: 1.65;
+  }
+}

@@ -13,7 +13,10 @@ import {
   Zap,
   CheckCircle2,
   AlertCircle,
+  Loader2,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { authErrorMessage } from '../../utils/authErrors';
 import './AuthPage.scss';
 
 const GoogleSvg = () => (
@@ -97,22 +100,54 @@ function PasswordField({ id, value, onChange, placeholder, autoComplete, onStren
   );
 }
 
-function LoginForm({ showToast }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: false, password: false });
+function OAuthButtons({ showToast, disabled }) {
+  const { loginWithGoogle, loginWithMicrosoft } = useAuth();
 
-  const handleLogin = () => {
-    const emailErr = !isEmail(email);
-    const passErr = !password;
-    setErrors({ email: emailErr, password: passErr });
-    if (!emailErr && !passErr) {
-      showToast('Signed in successfully! Redirecting…', true);
+  const handle = async (fn) => {
+    try {
+      await fn();
+    } catch (err) {
+      showToast(authErrorMessage(err), false);
     }
   };
 
   return (
-    <div className="form-view active">
+    <div className="oauth-row">
+      <button type="button" className="btn-oauth" disabled={disabled} onClick={() => handle(loginWithGoogle)}>
+        <GoogleSvg /> Google
+      </button>
+      <button type="button" className="btn-oauth" disabled={disabled} onClick={() => handle(loginWithMicrosoft)}>
+        <MicrosoftSvg /> Microsoft
+      </button>
+    </div>
+  );
+}
+
+function LoginForm({ showToast }) {
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({ email: false, password: false });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const emailErr = !isEmail(email);
+    const passErr = !password;
+    setErrors({ email: emailErr, password: passErr });
+    if (emailErr || passErr) return;
+
+    setSubmitting(true);
+    try {
+      await login(email, password);
+    } catch (err) {
+      showToast(authErrorMessage(err), false);
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form className="form-view active" onSubmit={handleLogin}>
       <div className="form-header">
         <div className="form-title">Welcome back</div>
         <div className="form-sub">Sign in to your QueueIQ dashboard</div>
@@ -151,23 +186,19 @@ function LoginForm({ showToast }) {
         <a href="#">Forgot password?</a>
       </div>
 
-      <button className="btn-primary" onClick={handleLogin}>Sign In</button>
+      <button className="btn-primary" type="submit" disabled={submitting}>
+        {submitting ? <><Loader2 className="btn-spinner" size={17} /> Signing in…</> : 'Sign In'}
+      </button>
 
       <div className="divider">or continue with</div>
 
-      <div className="oauth-row">
-        <button className="btn-oauth" onClick={() => showToast('Google sign-in coming soon', false)}>
-          <GoogleSvg /> Google
-        </button>
-        <button className="btn-oauth" onClick={() => showToast('Microsoft sign-in coming soon', false)}>
-          <MicrosoftSvg /> Microsoft
-        </button>
-      </div>
-    </div>
+      <OAuthButtons showToast={showToast} disabled={submitting} />
+    </form>
   );
 }
 
 function RegisterForm({ showToast }) {
+  const { register } = useAuth();
   const [role, setRole] = useState('doctor');
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
@@ -176,6 +207,7 @@ function RegisterForm({ showToast }) {
   const [terms, setTerms] = useState(false);
   const [strength, setStrength] = useState(0);
   const [errors, setErrors] = useState({ fname: false, lname: false, email: false, password: false });
+  const [submitting, setSubmitting] = useState(false);
 
   const roles = [
     { id: 'doctor', icon: Stethoscope, label: 'Doctor' },
@@ -187,7 +219,8 @@ function RegisterForm({ showToast }) {
     setStrength(calcStrength(val));
   };
 
-  const handleRegister = () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
     const fnameErr = !fname.trim();
     const lnameErr = !lname.trim();
     const emailErr = !isEmail(email);
@@ -197,15 +230,27 @@ function RegisterForm({ showToast }) {
       showToast('Please accept the Terms of Service', false);
       return;
     }
-    if (!fnameErr && !lnameErr && !emailErr && !passErr) {
-      showToast('Account created! Welcome to QueueIQ', true);
+    if (fnameErr || lnameErr || emailErr || passErr) return;
+
+    setSubmitting(true);
+    try {
+      await register({
+        email,
+        password,
+        firstName: fname.trim(),
+        lastName: lname.trim(),
+        role,
+      });
+    } catch (err) {
+      showToast(authErrorMessage(err), false);
+      setSubmitting(false);
     }
   };
 
   const sc = strength > 0 ? strengthClass(strength) : '';
 
   return (
-    <div className="form-view active">
+    <form className="form-view active" onSubmit={handleRegister}>
       <div className="form-header">
         <div className="form-title">Create account</div>
         <div className="form-sub">Join QueueIQ — it takes under a minute</div>
@@ -310,19 +355,14 @@ function RegisterForm({ showToast }) {
         </label>
       </div>
 
-      <button className="btn-primary" onClick={handleRegister}>Create Account</button>
+      <button className="btn-primary" type="submit" disabled={submitting}>
+        {submitting ? <><Loader2 className="btn-spinner" size={17} /> Creating account…</> : 'Create Account'}
+      </button>
 
       <div className="divider">or sign up with</div>
 
-      <div className="oauth-row">
-        <button className="btn-oauth" onClick={() => showToast('Google sign-up coming soon', false)}>
-          <GoogleSvg /> Google
-        </button>
-        <button className="btn-oauth" onClick={() => showToast('Microsoft sign-up coming soon', false)}>
-          <MicrosoftSvg /> Microsoft
-        </button>
-      </div>
-    </div>
+      <OAuthButtons showToast={showToast} disabled={submitting} />
+    </form>
   );
 }
 
@@ -331,7 +371,7 @@ export default function AuthPage() {
   const { toast, showToast } = useToast();
 
   return (
-    <>
+    <div className="auth-page">
       <div className="auth-bg">
         <div className="bg-blob blob-1" />
         <div className="bg-blob blob-2" />
@@ -427,6 +467,6 @@ export default function AuthPage() {
         </span>
         <span>{toast.message}</span>
       </div>
-    </>
+    </div>
   );
 }

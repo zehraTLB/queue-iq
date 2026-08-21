@@ -11,6 +11,7 @@
     "lucide-react": "^1.33.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-router-dom": "^7.18.2",
     "react-scripts": "5.0.1",
     "sass": "^1.99.0",
     "web-vitals": "^2.1.4"
@@ -19,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently -n web,api -c blue,green \"npm start\" \"npm run server\""
   },
   "eslintConfig": {
     "extends": [
@@ -38,5 +41,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }
