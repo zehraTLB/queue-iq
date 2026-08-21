@@ -1,46 +1,20 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import {
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  CalendarCheck2,
+  Stethoscope,
+  ClipboardList,
+  ShieldCheck,
+  Activity,
+  Zap,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import './AuthPage.scss';
-
-const IconEmail = () => (
-  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="4" width="20" height="16" rx="2" />
-    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-  </svg>
-);
-
-const IconLock = () => (
-  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" />
-    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-);
-
-const IconUser = () => (
-  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="8" r="4" />
-    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-  </svg>
-);
-
-const IconEyeOpen = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-
-const IconEyeClosed = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-    <line x1="1" y1="1" x2="23" y2="23" />
-  </svg>
-);
-
-const IconBrand = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-  </svg>
-);
 
 const GoogleSvg = () => (
   <svg viewBox="0 0 24 24">
@@ -77,73 +51,6 @@ const strengthClass = (score) => {
   return 'lit-good';
 };
 
-function useParticleCanvas(canvasRef) {
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [], raf;
-
-    function Particle() {
-      this.x = Math.random() * W;
-      this.y = Math.random() * H;
-      this.r = Math.random() * 1.5 + 0.3;
-      this.vx = (Math.random() - 0.5) * 0.3;
-      this.vy = (Math.random() - 0.5) * 0.3;
-      this.alpha = Math.random() * 0.5 + 0.1;
-    }
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-
-    function init() {
-      resize();
-      particles = Array.from({ length: 80 }, () => new Particle());
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      for (let p of particles) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,194,168,${p.alpha})`;
-        ctx.fill();
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > W) p.vx *= -1;
-        if (p.y < 0 || p.y > H) p.vy *= -1;
-      }
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(0,194,168,${0.08 * (1 - d / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-      raf = requestAnimationFrame(draw);
-    }
-
-    window.addEventListener('resize', resize);
-    init();
-    draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(raf);
-    };
-  }, [canvasRef]);
-}
-
 function useToast() {
   const [toast, setToast] = useState({ visible: false, message: '', success: true });
   const timerRef = useRef(null);
@@ -169,7 +76,7 @@ function PasswordField({ id, value, onChange, placeholder, autoComplete, onStren
 
   return (
     <div className="input-wrap">
-      <IconLock />
+      <Lock className="input-icon" size={17} />
       <input
         type={show ? 'text' : 'password'}
         id={id}
@@ -184,7 +91,7 @@ function PasswordField({ id, value, onChange, placeholder, autoComplete, onStren
         aria-label="Toggle password"
         onClick={() => setShow((s) => !s)}
       >
-        {show ? <IconEyeClosed /> : <IconEyeOpen />}
+        {show ? <EyeOff size={16} /> : <Eye size={16} />}
       </button>
     </div>
   );
@@ -200,7 +107,7 @@ function LoginForm({ showToast }) {
     const passErr = !password;
     setErrors({ email: emailErr, password: passErr });
     if (!emailErr && !passErr) {
-      showToast('✅ Signed in successfully! Redirecting…', true);
+      showToast('Signed in successfully! Redirecting…', true);
     }
   };
 
@@ -214,7 +121,7 @@ function LoginForm({ showToast }) {
       <div className="field">
         <label>Email address</label>
         <div className={`input-wrap${errors.email ? ' error' : ''}`}>
-          <IconEmail />
+          <Mail className="input-icon" size={17} />
           <input
             type="email"
             value={email}
@@ -249,10 +156,10 @@ function LoginForm({ showToast }) {
       <div className="divider">or continue with</div>
 
       <div className="oauth-row">
-        <button className="btn-oauth" onClick={() => showToast('🔗 Google sign-in coming soon', false)}>
+        <button className="btn-oauth" onClick={() => showToast('Google sign-in coming soon', false)}>
           <GoogleSvg /> Google
         </button>
-        <button className="btn-oauth" onClick={() => showToast('🔗 Microsoft sign-in coming soon', false)}>
+        <button className="btn-oauth" onClick={() => showToast('Microsoft sign-in coming soon', false)}>
           <MicrosoftSvg /> Microsoft
         </button>
       </div>
@@ -271,9 +178,9 @@ function RegisterForm({ showToast }) {
   const [errors, setErrors] = useState({ fname: false, lname: false, email: false, password: false });
 
   const roles = [
-    { id: 'doctor', icon: '🩺', label: 'Doctor' },
-    { id: 'staff', icon: '👩‍💼', label: 'Staff' },
-    { id: 'admin', icon: '🛡️', label: 'Admin' },
+    { id: 'doctor', icon: Stethoscope, label: 'Doctor' },
+    { id: 'staff', icon: ClipboardList, label: 'Staff' },
+    { id: 'admin', icon: ShieldCheck, label: 'Admin' },
   ];
 
   const handleStrength = (val) => {
@@ -287,11 +194,11 @@ function RegisterForm({ showToast }) {
     const passErr = password.length < 8;
     setErrors({ fname: fnameErr, lname: lnameErr, email: emailErr, password: passErr });
     if (!terms) {
-      showToast('⚠️ Please accept the Terms of Service', false);
+      showToast('Please accept the Terms of Service', false);
       return;
     }
     if (!fnameErr && !lnameErr && !emailErr && !passErr) {
-      showToast('🎉 Account created! Welcome to QueueIQ', true);
+      showToast('Account created! Welcome to QueueIQ', true);
     }
   };
 
@@ -307,17 +214,20 @@ function RegisterForm({ showToast }) {
       <div className="field">
         <label>I am a</label>
         <div className="role-selector">
-          {roles.map((r) => (
-            <button
-              key={r.id}
-              className={`role-btn${role === r.id ? ' selected' : ''}`}
-              onClick={() => setRole(r.id)}
-              type="button"
-            >
-              <span className="role-icon">{r.icon}</span>
-              <span className="role-label">{r.label}</span>
-            </button>
-          ))}
+          {roles.map((r) => {
+            const RoleIcon = r.icon;
+            return (
+              <button
+                key={r.id}
+                className={`role-btn${role === r.id ? ' selected' : ''}`}
+                onClick={() => setRole(r.id)}
+                type="button"
+              >
+                <RoleIcon className="role-icon" size={22} />
+                <span className="role-label">{r.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -325,7 +235,7 @@ function RegisterForm({ showToast }) {
         <div className="field">
           <label>First name</label>
           <div className={`input-wrap${errors.fname ? ' error' : ''}`}>
-            <IconUser />
+            <User className="input-icon" size={17} />
             <input
               type="text"
               value={fname}
@@ -338,7 +248,7 @@ function RegisterForm({ showToast }) {
         <div className="field">
           <label>Last name</label>
           <div className={`input-wrap${errors.lname ? ' error' : ''}`}>
-            <IconUser />
+            <User className="input-icon" size={17} />
             <input
               type="text"
               value={lname}
@@ -353,7 +263,7 @@ function RegisterForm({ showToast }) {
       <div className="field">
         <label>Work email</label>
         <div className={`input-wrap${errors.email ? ' error' : ''}`}>
-          <IconEmail />
+          <Mail className="input-icon" size={17} />
           <input
             type="email"
             value={email}
@@ -405,10 +315,10 @@ function RegisterForm({ showToast }) {
       <div className="divider">or sign up with</div>
 
       <div className="oauth-row">
-        <button className="btn-oauth" onClick={() => showToast('🔗 Google sign-up coming soon', false)}>
+        <button className="btn-oauth" onClick={() => showToast('Google sign-up coming soon', false)}>
           <GoogleSvg /> Google
         </button>
-        <button className="btn-oauth" onClick={() => showToast('🔗 Microsoft sign-up coming soon', false)}>
+        <button className="btn-oauth" onClick={() => showToast('Microsoft sign-up coming soon', false)}>
           <MicrosoftSvg /> Microsoft
         </button>
       </div>
@@ -418,23 +328,21 @@ function RegisterForm({ showToast }) {
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState('login');
-  const canvasRef = useRef(null);
   const { toast, showToast } = useToast();
-
-  useParticleCanvas(canvasRef);
-
-  const switchTab = (tab) => setActiveTab(tab);
 
   return (
     <>
-      <canvas ref={canvasRef} className="bg-canvas" />
-      <div className="grid-overlay" />
+      <div className="auth-bg">
+        <div className="bg-blob blob-1" />
+        <div className="bg-blob blob-2" />
+        <div className="bg-blob blob-3" />
+      </div>
 
       <div className="layout">
         <div className="left-panel">
           <div className="brand">
             <div className="brand-icon">
-              <IconBrand />
+              <CalendarCheck2 size={22} strokeWidth={2.2} />
             </div>
             <span className="brand-name">Queue<span>IQ</span></span>
           </div>
@@ -447,20 +355,24 @@ export default function AuthPage() {
               <em>Zero</em> Wasted Slots
             </h1>
             <p>
-              Scheduling platform with real-time slot optimization, no-show risk scoring, and dynamic queue intelligence.
+              Scheduling platform with real-time slot optimization, no-show risk scoring, and dynamic queue intelligence for clinics and hospitals.
             </p>
           </div>
 
           <div className="float-cards">
             <div className="float-card">
-              <div className="fc-dot" style={{ background: 'rgba(0,194,168,.15)' }}>📉</div>
+              <div className="fc-dot fc-dot-risk">
+                <Activity size={18} />
+              </div>
               <div className="fc-content">
                 <div className="fc-title">No-Show Risk Score</div>
                 <div className="fc-sub">Patient #4821 — Risk: 74%</div>
               </div>
             </div>
             <div className="float-card">
-              <div className="fc-dot" style={{ background: 'rgba(0,120,255,.15)' }}>⚡</div>
+              <div className="fc-dot fc-dot-slot">
+                <Zap size={18} />
+              </div>
               <div className="fc-content">
                 <div className="fc-title">Slot Optimized</div>
                 <div className="fc-sub">3 new bookings filled automatically</div>
@@ -485,37 +397,34 @@ export default function AuthPage() {
         </div>
 
         <div className="right-panel">
-          <div className="tabs">
-            <div className={`tab-slider${activeTab === 'register' ? ' right' : ''}`} />
-            <button
-              className={`tab-btn${activeTab === 'login' ? ' active' : ''}`}
-              onClick={() => switchTab('login')}
-            >
-              Sign In
-            </button>
-            <button
-              className={`tab-btn${activeTab === 'register' ? ' active' : ''}`}
-              onClick={() => switchTab('register')}
-            >
-              Create Account
-            </button>
-          </div>
+          <div className="form-card">
+            <div className="tabs">
+              <div className={`tab-slider${activeTab === 'register' ? ' right' : ''}`} />
+              <button
+                className={`tab-btn${activeTab === 'login' ? ' active' : ''}`}
+                onClick={() => setActiveTab('login')}
+              >
+                Sign In
+              </button>
+              <button
+                className={`tab-btn${activeTab === 'register' ? ' active' : ''}`}
+                onClick={() => setActiveTab('register')}
+              >
+                Create Account
+              </button>
+            </div>
 
-          {activeTab === 'login'
-            ? <LoginForm showToast={showToast} />
-            : <RegisterForm showToast={showToast} />}
+            {activeTab === 'login'
+              ? <LoginForm showToast={showToast} />
+              : <RegisterForm showToast={showToast} />}
+          </div>
         </div>
       </div>
 
-      <div
-        className={`toast${toast.visible ? ' show' : ''}`}
-        style={{
-          borderColor: toast.success
-            ? 'rgba(0,194,168,.3)'
-            : 'rgba(255,76,106,.3)',
-        }}
-      >
-        <span className="toast-icon">{toast.success ? '✅' : '⚠️'}</span>
+      <div className={`toast${toast.visible ? ' show' : ''}${toast.success ? ' ok' : ' warn'}`}>
+        <span className="toast-icon">
+          {toast.success ? <CheckCircle2 size={17} /> : <AlertCircle size={17} />}
+        </span>
         <span>{toast.message}</span>
       </div>
     </>
