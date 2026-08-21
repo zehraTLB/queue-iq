@@ -4,6 +4,9 @@ import cors from 'cors';
 import './firebaseAdmin.js';
 import { authenticate } from './middleware/auth.js';
 import usersRouter from './routes/users.js';
+import patientsRouter from './routes/patients.js';
+import doctorsRouter from './routes/doctors.js';
+import appointmentsRouter from './routes/appointments.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -16,6 +19,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/users', authenticate, usersRouter);
+app.use('/api/patients', authenticate, patientsRouter);
+app.use('/api/doctors', authenticate, doctorsRouter);
+app.use('/api/appointments', authenticate, appointmentsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found.' });

@@ -1,0 +1,66 @@
+@use '../../styles/vars' as *;
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(14px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 50, 74, .4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: $panel;
+  border: 1px solid $border;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(22, 50, 74, .25);
+  animation: modal-in .25s ease both;
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+
+  h2 {
+    font-family: $font-head;
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: $text;
+  }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: $muted;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: color .2s, background .2s;
+
+  &:hover {
+    color: $text;
+    background: $card;
+  }
+}
+
+.modal-body {
+  padding: 20px 24px 24px;
+}
