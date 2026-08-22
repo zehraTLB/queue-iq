@@ -7,6 +7,7 @@ import {
   LogOut,
   CalendarCheck2,
   User,
+  Zap,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './DashboardLayout.scss';
@@ -14,6 +15,7 @@ import './DashboardLayout.scss';
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/appointments', icon: CalendarDays, label: 'Appointments' },
+  { to: '/optimizer', icon: Zap, label: 'Slot Optimizer' },
   { to: '/patients', icon: Users, label: 'Patients' },
   { to: '/doctors', icon: Stethoscope, label: 'Doctors' },
 ];

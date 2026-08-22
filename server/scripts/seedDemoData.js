@@ -45,7 +45,7 @@ const shiftDays = (days) => {
 
 async function clearDemoData(db) {
   let removed = 0;
-  for (const collection of ['appointments', 'patients', 'doctors']) {
+  for (const collection of ['appointments', 'waitlist', 'patients', 'doctors']) {
     const snap = await db.collection(collection).where(DEMO_FLAG, '==', true).get();
     const batch = db.batch();
     snap.docs.forEach((doc) => batch.delete(doc.ref));

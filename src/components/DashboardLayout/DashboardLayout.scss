@@ -177,6 +177,88 @@
   padding: 24px 32px 40px;
 }
 
+.date-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+
+  .date-input {
+    background: #fff;
+    border: 1px solid $border;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: $font-body;
+    font-size: .88rem;
+    font-weight: 600;
+    color: $text;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, .12);
+    }
+  }
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid $border;
+  background: #fff;
+  font-size: .76rem;
+  font-weight: 600;
+  color: $muted;
+
+  &.on {
+    border-color: rgba($teal, .35);
+    background: rgba($teal, .08);
+    color: #00806f;
+
+    svg { animation: live-pulse 2s ease-in-out infinite; }
+  }
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .35; }
+}
+
+.urgency {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 100px;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: .02em;
+
+  &-routine {
+    background: rgba($muted, .2);
+    color: $text-dim;
+  }
+
+  &-soon {
+    background: rgba($warning, .15);
+    color: #b26a02;
+  }
+
+  &-urgent {
+    background: rgba($danger, .12);
+    color: $danger;
+  }
+}
+
+.btn-sm {
+  padding: 7px 13px;
+  font-size: .8rem;
+  border-radius: 9px;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

@@ -10,6 +10,13 @@ export const createDoctor = (body) => apiFetch('/api/doctors', { method: 'POST',
 export const updateDoctor = (id, body) => apiFetch(`/api/doctors/${id}`, { method: 'PATCH', body });
 export const deleteDoctor = (id) => apiFetch(`/api/doctors/${id}`, { method: 'DELETE' });
 
+export const listWaitlist = () => apiFetch('/api/waitlist');
+export const addToWaitlist = (body) => apiFetch('/api/waitlist', { method: 'POST', body });
+export const bookFromWaitlist = (id, body) => apiFetch(`/api/waitlist/${id}/book`, { method: 'POST', body });
+export const removeFromWaitlist = (id) => apiFetch(`/api/waitlist/${id}`, { method: 'DELETE' });
+
+export const getOptimization = (date) => apiFetch(`/api/optimization?date=${date}`);
+
 export const listAppointments = (date) => apiFetch(`/api/appointments?date=${date}`);
 export const createAppointment = (body) => apiFetch('/api/appointments', { method: 'POST', body });
 export const updateAppointment = (id, body) => apiFetch(`/api/appointments/${id}`, { method: 'PATCH', body });

@@ -8,12 +8,14 @@ import {
   CheckCircle2,
   UserX,
   Ban,
+  Radio,
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout';
 import Modal from '../../components/Modal/Modal';
 import RiskBadge from '../../components/RiskBadge/RiskBadge';
 import RiskDetail from '../../components/RiskDetail/RiskDetail';
 import { useToast } from '../../components/Toast/ToastProvider';
+import useLiveUpdates from '../../hooks/useLiveUpdates';
 import {
   listAppointments,
   createAppointment,
@@ -54,19 +56,24 @@ export default function AppointmentsPage() {
   const [saving, setSaving] = useState(false);
   const [riskDetail, setRiskDetail] = useState(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      setAppointments(await listAppointments(date));
-    } catch (err) {
-      showToast(err.message, false);
-    }
-    setLoading(false);
-  }, [date, showToast]);
+  const load = useCallback(
+    async (silent = false) => {
+      if (!silent) setLoading(true);
+      try {
+        setAppointments(await listAppointments(date));
+      } catch (err) {
+        showToast(err.message, false);
+      }
+      if (!silent) setLoading(false);
+    },
+    [date, showToast]
+  );
 
   useEffect(() => {
     load();
   }, [load]);
+
+  const live = useLiveUpdates(date, () => load(true));
 
   useEffect(() => {
     Promise.all([listPatients(), listDoctors()])
@@ -138,9 +145,14 @@ export default function AppointmentsPage() {
     <DashboardLayout
       title="Appointments"
       actions={(
-        <button className="btn btn-blue" onClick={() => setModalOpen(true)}>
-          <Plus size={16} /> New Appointment
-        </button>
+        <>
+          <span className={`live-pill${live ? ' on' : ''}`}>
+            <Radio size={13} /> {live ? 'Live' : 'Offline'}
+          </span>
+          <button className="btn btn-blue" onClick={() => setModalOpen(true)}>
+            <Plus size={16} /> New Appointment
+          </button>
+        </>
       )}
     >
       <div className="date-bar">

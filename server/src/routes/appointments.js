@@ -2,40 +2,18 @@ import { Router } from 'express';
 import { getDb } from '../firebaseAdmin.js';
 import { fetchHistories } from '../services/history.js';
 import { scoreAppointment } from '../services/riskScoring.js';
+import {
+  ACTIVE_STATUSES,
+  ALL_STATUSES as STATUSES,
+  DATE_RE,
+  TIME_RE,
+  timeToMinutes,
+  findConflict,
+  buildAppointment,
+  listAppointmentsForDate,
+} from '../services/scheduling.js';
 
 const router = Router();
-
-const STATUSES = ['scheduled', 'checked-in', 'completed', 'no-show', 'cancelled'];
-const ACTIVE_STATUSES = ['scheduled', 'checked-in'];
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-const timeToMinutes = (t) => {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-};
-
-const overlaps = (startA, durA, startB, durB) =>
-  startA < startB + durB && startB < startA + durA;
-
-async function findConflict(db, { doctorId, date, start, durationMin }, excludeId = null) {
-  const snap = await db
-    .collection('appointments')
-    .where('doctorId', '==', doctorId)
-    .where('date', '==', date)
-    .get();
-
-  const startMin = timeToMinutes(start);
-  for (const doc of snap.docs) {
-    if (doc.id === excludeId) continue;
-    const appt = doc.data();
-    if (!ACTIVE_STATUSES.includes(appt.status)) continue;
-    if (overlaps(startMin, durationMin, timeToMinutes(appt.start), appt.durationMin)) {
-      return appt;
-    }
-  }
-  return null;
-}
 
 router.get('/', async (req, res, next) => {
   try {
@@ -43,11 +21,7 @@ router.get('/', async (req, res, next) => {
     if (!date || !DATE_RE.test(date)) {
       return res.status(400).json({ error: 'A date query parameter (YYYY-MM-DD) is required.' });
     }
-    const snap = await getDb().collection('appointments').where('date', '==', date).get();
-    const appointments = snap.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-
+    const appointments = await listAppointmentsForDate(date);
     const histories = await fetchHistories(appointments.map((a) => a.patientId));
     const scored = appointments.map((appt) => ({
       ...appt,
@@ -79,40 +53,27 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({ error: 'Duration must be between 5 and 240 minutes.' });
     }
 
-    const [patientSnap, doctorSnap] = await Promise.all([
-      db.collection('patients').doc(patientId).get(),
-      db.collection('doctors').doc(doctorId).get(),
-    ]);
-    if (!patientSnap.exists) {
-      return res.status(400).json({ error: 'Patient not found.' });
-    }
-    if (!doctorSnap.exists) {
-      return res.status(400).json({ error: 'Doctor not found.' });
-    }
-
-    const conflict = await findConflict(db, { doctorId, date, start, durationMin: duration });
-    if (conflict) {
-      return res.status(409).json({
-        error: `${doctorSnap.data().name} already has an appointment at ${conflict.start} on this day.`,
-      });
-    }
-
-    const patient = patientSnap.data();
-    const now = new Date().toISOString();
-    const data = {
+    const data = await buildAppointment(db, {
       patientId,
-      patientName: `${patient.firstName} ${patient.lastName}`,
       doctorId,
-      doctorName: doctorSnap.data().name,
       date,
       start,
       durationMin: duration,
-      reason: String(reason).trim(),
-      status: 'scheduled',
+      reason,
       createdBy: req.user.uid,
-      createdAt: now,
-      updatedAt: now,
-    };
+    });
+
+    if (!req.body.allowOverbook) {
+      const conflict = await findConflict(db, { doctorId, date, start, durationMin: duration });
+      if (conflict) {
+        return res.status(409).json({
+          error: `${data.doctorName} already has an appointment at ${conflict.start} on this day.`,
+        });
+      }
+    } else {
+      data.overbooked = true;
+    }
+
     const ref = await db.collection('appointments').add(data);
     res.status(201).json({ id: ref.id, ...data });
   } catch (err) {

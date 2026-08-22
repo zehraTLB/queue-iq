@@ -5,6 +5,7 @@ import { ToastProvider } from './components/Toast/ToastProvider';
 import AuthPage from './pages/AuthPage/AuthPage';
 import DashboardPage from './pages/DashboardPage/DashboardPage';
 import AppointmentsPage from './pages/AppointmentsPage/AppointmentsPage';
+import OptimizerPage from './pages/OptimizerPage/OptimizerPage';
 import PatientsPage from './pages/PatientsPage/PatientsPage';
 import DoctorsPage from './pages/DoctorsPage/DoctorsPage';
 
@@ -55,6 +56,14 @@ const App = () => {
               element={(
                 <ProtectedRoute>
                   <AppointmentsPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="/optimizer"
+              element={(
+                <ProtectedRoute>
+                  <OptimizerPage />
                 </ProtectedRoute>
               )}
             />
